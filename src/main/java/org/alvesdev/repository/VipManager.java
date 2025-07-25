@@ -10,19 +10,18 @@ import org.alvesdev.model.UsuarioVip;
 import org.alvesdev.util.adapter.LocalDateTimeAdapter;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class VipManager {
-
     private final Path arquivo = Paths.get("vips.json");
-    private List<UsuarioVip> vips = new ArrayList<>();
+    private final List<UsuarioVip> vips = Collections.synchronizedList(new ArrayList<>());
     private final Gson gson;
+    private final Object fileLock = new Object();
 
     public VipManager() {
         this.gson = new GsonBuilder()
@@ -32,91 +31,116 @@ public class VipManager {
         carregar();
     }
 
-
     private void carregar() {
-        try {
-            if (Files.exists(arquivo)) {
-                String json = Files.readString(arquivo);
-                UsuarioVip[] array = gson.fromJson(json, UsuarioVip[].class);
-                if (array != null) {
-                    vips = new ArrayList<>(Arrays.asList(array));
+        synchronized(fileLock) {
+            try {
+                if (Files.exists(arquivo)) {
+                    String json = Files.readString(arquivo, StandardCharsets.UTF_8);
+                    UsuarioVip[] array = gson.fromJson(json, UsuarioVip[].class);
+                    if (array != null) {
+                        vips.clear();
+                        vips.addAll(Arrays.asList(array));
+                        System.out.println("[VIP] Carregados " + vips.size() + " VIPs do arquivo");
+                    }
                 }
+            } catch (Exception e) {
+                System.err.println("[VIP ERRO] Falha ao carregar: " + e.getMessage());
             }
-        } catch (IOException e) {
-            System.out.println("[ VIP ] Erro ao carregar arquivo");
         }
     }
 
     private void salvar() {
-        try {
-            String json = gson.toJson(vips);
-            Files.writeString(arquivo, json);
-        } catch (IOException e) {
-            System.out.println("[ VIP ] Erro ao salvar arquivo");
+        synchronized(fileLock) {
+            try {
+                String json = gson.toJson(vips);
+                Files.writeString(arquivo, json, StandardCharsets.UTF_8);
+            } catch (Exception e) {
+                System.err.println("[VIP ERRO] Falha ao salvar: " + e.getMessage());
+            }
         }
     }
 
-    // Adiciona ou atualiza VIP e salva
     public void adicionarVip(UsuarioVip novoVip) {
-        for (UsuarioVip vip : vips) {
-            if (vip.getUserId().equals(novoVip.getUserId()) && vip.getGuildId().equals(novoVip.getGuildId())) {
-                vip.setDataExpiracao(novoVip.getDataExpiracao()); // atualiza a data
-                salvar();
-                return;
-            }
-        }
+        synchronized(vips) {
+            Optional<UsuarioVip> existente = vips.stream()
+                    .filter(v -> v.getUserId().equals(novoVip.getUserId())
+                            && v.getGuildId().equals(novoVip.getGuildId()))
+                    .findFirst();
 
-        vips.add(novoVip);
-        salvar();
+            if (existente.isPresent()) {
+                existente.get().setDataExpiracao(novoVip.getDataExpiracao());
+            } else {
+                vips.add(novoVip);
+            }
+            salvar();
+        }
     }
 
-    // Remove VIP e salva
     public void removerVip(UsuarioVip vip) {
-        vips.removeIf(v -> v.getUserId().equals(vip.getUserId()) && v.getGuildId().equals(vip.getGuildId()));
-        salvar();
+        synchronized(vips) {
+            vips.removeIf(v -> v.getUserId().equals(vip.getUserId())
+                    && v.getGuildId().equals(vip.getGuildId()));
+            salvar();
+        }
     }
 
-    // Retorna lista atual de VIPs
-    public List<UsuarioVip> getVips() {
-        return new ArrayList<>(vips);
-    }
-
-    // Verifica e remove VIPs expirados do Discord e do arquivo
     public void verificarExpirados(JDA jda) {
+        carregar();
         LocalDateTime agora = LocalDateTime.now();
+        System.out.println("\n[VIP] Iniciando verificação em: " + agora);
 
-        List<UsuarioVip> expirados = new ArrayList<>();
-
-        for (UsuarioVip vip : vips) {
-            if (agora.isAfter(vip.getDataExpiracao())) {
-                expirados.add(vip);
-            }
+        List<UsuarioVip> expirados;
+        synchronized(vips) {
+            expirados = vips.stream()
+                    .filter(vip -> {
+                        boolean expirado = agora.isAfter(vip.getDataExpiracao().minusSeconds(5));
+                        if (expirado) {
+                            System.out.println("[VIP] Expirou: " + vip.getUserId()
+                                    + " | " + vip.getDataExpiracao());
+                        }
+                        return expirado;
+                    })
+                    .toList();
         }
 
-        for (UsuarioVip vip : expirados) {
-            Guild guild = jda.getGuildById(vip.getGuildId());
-            if (guild == null){
-                System.out.println("[ VIP ] Guild nula ou não encontrada");
-                continue;
-            }
+        expirados.forEach(vip -> processarExpirado(jda, vip));
+    }
 
-            Member member = guild.getMemberById(vip.getUserId());
-            //Verifica usuarios offlines
-            if (member == null){
-                member = guild.retrieveMemberById(vip.getUserId()).complete();
-            }
-            Role role = guild.getRoleById(vip.getRoleId());
+    private void processarExpirado(JDA jda, UsuarioVip vip) {
+        System.out.println("[VIP] Processando expirado: " + vip.getUserId());
 
-            if (role == null){
-                System.err.println("[ VIP ] Cargo nulo ou não encontrado");
-            }
-
-            if (member != null && role != null) {
-                guild.removeRoleFromMember(member, role).queue();
-                System.out.println("[VIP] Removido VIP expirado de " + member.getEffectiveName());
-            }
-
+        Guild guild = jda.getGuildById(vip.getGuildId());
+        if (guild == null) {
+            System.out.println("[VIP] Guild não existe mais, removendo VIP");
             removerVip(vip);
+            return;
         }
+
+        guild.retrieveMemberById(vip.getUserId()).queue(
+                member -> removerCargo(member, vip),
+                error -> {
+                    System.out.println("[VIP] Membro não encontrado: " + error.getMessage());
+                    removerVip(vip);
+                }
+        );
+    }
+
+    private void removerCargo(Member member, UsuarioVip vip) {
+        Guild guild = member.getGuild();
+        Role role = guild.getRoleById(vip.getRoleId());
+
+        if (role == null) {
+            System.out.println("[VIP] Cargo não existe mais");
+            removerVip(vip);
+            return;
+        }
+
+        guild.removeRoleFromMember(member, role).queue(
+                success -> {
+                    System.out.println("[VIP] Cargo removido de " + member.getEffectiveName());
+                    removerVip(vip);
+                },
+                error -> System.err.println("[VIP] Erro ao remover cargo: " + error.getMessage())
+        );
     }
 }

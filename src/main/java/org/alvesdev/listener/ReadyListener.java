@@ -5,6 +5,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.alvesdev.service.VipService;
 import org.alvesdev.service.registro.SlashCommandRegistry;
 
+import java.time.LocalDateTime;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -30,8 +31,10 @@ public class ReadyListener extends ListenerAdapter {
         ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
         VipService vipService = new VipService();
 
+        // Verifica a cada 30 SEGUNDOS (em vez de 1 hora)
         scheduler.scheduleAtFixedRate(() -> {
-            vipService.removerExpirados(event.getJDA());
-        }, 0, 1, TimeUnit.HOURS); // TimeUnit.MINUTES para testes, atualmente roda a cada 1 hora
+            vipService.removerExpirados(jda);
+            System.out.println("[TESTE] Verificação rápida em: " + LocalDateTime.now());
+        }, 0, 30, TimeUnit.SECONDS);
     }
 }
