@@ -1,10 +1,14 @@
 package org.alvesdev.controller;
 
+import net.dv8tion.jda.api.components.selections.SelectOption;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 import org.alvesdev.service.RegistroService;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -30,37 +34,60 @@ public class RegistroController {
     // Handler para a seleção do menu multi select
     public void handleSelectCargo(StringSelectInteractionEvent event) {
         if (!event.getComponentId().equals("select_cargo")) {
-            return;
+            return; // Ignora outros selects
         }
 
         Member member = event.getMember();
-        if (member == null) {
-            event.reply("Erro ao identificar seu usuário.").setEphemeral(true).queue();
+        Guild guild = event.getGuild();
+
+        if (member == null || guild == null) {
+            event.reply("Erro ao identificar usuário ou servidor.").setEphemeral(true).queue();
             return;
         }
 
-        var guild = event.getGuild();
-        if (guild == null) {
-            event.reply("Erro ao identificar o servidor.").setEphemeral(true).queue();
+        List<String> selecionados = event.getValues(); // IDs selecionados no momento
+        List<String> todosIdsDoMenu = event.getComponent().getOptions().stream()
+                .map(option -> option.getValue())
+                .toList();
+
+        if (selecionados.isEmpty()) {
+            event.reply("Opção desmarcada.").setEphemeral(true).queue();
             return;
         }
 
-        for (String roleId : event.getValues()) {
-            var role = guild.getRoleById(roleId);
-            if (role != null) {
-                if (!guild.getSelfMember().canInteract(role)) {
-                    event.reply("❌ Não tenho permissão para atribuir o cargo: " + role.getName())
-                            .setEphemeral(true).queue();
-                    return;
+        StringBuilder resposta = new StringBuilder();
+
+        for (String cargoId : todosIdsDoMenu) {
+            Role role = guild.getRoleById(cargoId);
+            if (role == null) continue;
+
+            boolean possuiCargo = member.getRoles().contains(role);
+            boolean foiSelecionado = selecionados.contains(cargoId);
+
+
+
+            // Se foi selecionado e usuário não tem o cargo, adiciona
+            if (foiSelecionado && !possuiCargo) {
+                if (guild.getSelfMember().canInteract(role)) {
+                    guild.addRoleToMember(member, role).queue();
+                    resposta.append("Cargo ").append(role.getName()).append(" atribuído.\n");
+                } else {
+                    resposta.append("Não tenho permissão para atribuir o cargo ").append(role.getName()).append(".\n");
                 }
-                if(member.getRoles().contains(role)) {
+            }
+
+            // Se não foi selecionado e usuário possui, remove
+            if (foiSelecionado && possuiCargo) {
+                if (guild.getSelfMember().canInteract(role)) {
                     guild.removeRoleFromMember(member, role).queue();
+                    resposta.append("Cargo ").append(role.getName()).append(" removido.\n");
+                } else {
+                    resposta.append("Não tenho permissão para remover o cargo ").append(role.getName()).append(".\n");
                 }
-                guild.addRoleToMember(member, role).queue();
             }
         }
 
-        event.reply("Cargos atribuídos com sucesso!").setEphemeral(true).queue();
+        event.reply(resposta.toString()).setEphemeral(true).queue();
     }
 }
 
