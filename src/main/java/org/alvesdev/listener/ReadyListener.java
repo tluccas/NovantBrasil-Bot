@@ -32,6 +32,6 @@ public class ReadyListener extends ListenerAdapter {
 
         scheduler.scheduleAtFixedRate(() -> {
             vipService.removerExpirados(event.getJDA());
-        }, 0, 1, TimeUnit.HOURS); // TimeUnit.MINUTES para testes, atualmente roda a cada 1 hora
+        }, 0, 1, TimeUnit.HOURS); // TimeUnit.HOURS roda a cada 1 hora
     }
 }
