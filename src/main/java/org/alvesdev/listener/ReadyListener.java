@@ -2,9 +2,12 @@ package org.alvesdev.listener;
 
 import net.dv8tion.jda.api.events.session.ReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import org.alvesdev.commands.CriarTicketCommand;
+import org.alvesdev.repository.TicketManager;
 import org.alvesdev.service.VipService;
 import org.alvesdev.service.registro.SlashCommandRegistry;
 
+import java.time.LocalDateTime;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -21,17 +24,24 @@ public class ReadyListener extends ListenerAdapter {
         //Registro de comandos
         jda.updateCommands()
                 .addCommands(SlashCommandRegistry.getComandos())
-                .queue(
+                .addCommands(CriarTicketCommand.getCommandData()).queue(
                         success -> System.out.println("✅ Comandos registrados."),
                         error -> System.err.println("❌ Erro ao registrar comandos: " + error.getMessage())
                 );
+
+        jda.addEventListener(new CriarTicketCommand());   // Listener do comando criarticket
+        jda.addEventListener(new TicketSelectListener()); // Listener do select menu
+        jda.addEventListener(new TicketButtonListener()); // Listener dos botões
+
 
 
         ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
         VipService vipService = new VipService();
 
+        // Verifica a cada 30 SEGUNDOS (em vez de 1 hora)
         scheduler.scheduleAtFixedRate(() -> {
-            vipService.removerExpirados(event.getJDA());
-        }, 0, 1, TimeUnit.HOURS); // TimeUnit.HOURS roda a cada 1 hora
+            vipService.removerExpirados(jda);
+            System.out.println("[TESTE] Verificação rápida em: " + LocalDateTime.now());
+        }, 0, 30, TimeUnit.SECONDS);
     }
 }
