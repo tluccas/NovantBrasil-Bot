@@ -1,6 +1,6 @@
 package org.alvesdev.controller;
 
-import net.dv8tion.jda.api.components.selections.SelectOption;
+
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;

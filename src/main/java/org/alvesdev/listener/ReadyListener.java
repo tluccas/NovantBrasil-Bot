@@ -2,6 +2,8 @@ package org.alvesdev.listener;
 
 import net.dv8tion.jda.api.events.session.ReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import org.alvesdev.commands.CriarTicketCommand;
+import org.alvesdev.repository.TicketManager;
 import org.alvesdev.service.VipService;
 import org.alvesdev.service.registro.SlashCommandRegistry;
 
@@ -22,10 +24,15 @@ public class ReadyListener extends ListenerAdapter {
         //Registro de comandos
         jda.updateCommands()
                 .addCommands(SlashCommandRegistry.getComandos())
-                .queue(
+                .addCommands(CriarTicketCommand.getCommandData()).queue(
                         success -> System.out.println("✅ Comandos registrados."),
                         error -> System.err.println("❌ Erro ao registrar comandos: " + error.getMessage())
                 );
+
+        jda.addEventListener(new CriarTicketCommand());   // Listener do comando criarticket
+        jda.addEventListener(new TicketSelectListener()); // Listener do select menu
+        jda.addEventListener(new TicketButtonListener()); // Listener dos botões
+
 
 
         ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
