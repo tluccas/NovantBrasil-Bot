@@ -5,7 +5,7 @@ import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import org.alvesdev.config.Config;
 import org.alvesdev.listener.CommandListener;
-import org.alvesdev.listener.ReadyListener;
+import org.alvesdev.config.ReadyListener;
 import org.alvesdev.util.exceptions.FalhaAoIniciarException;
 
 public class MainBot {

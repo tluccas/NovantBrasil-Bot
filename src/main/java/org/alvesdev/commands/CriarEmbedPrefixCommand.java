@@ -5,6 +5,8 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import java.util.List;
+import java.util.regex.Matcher;
 
 import java.awt.*;
 
@@ -21,17 +23,19 @@ public class CriarEmbedPrefixCommand extends ListenerAdapter {
 
         String content = event.getMessage().getContentRaw();
 
-        java.util.regex.Matcher matcher = java.util.regex.Pattern.compile("\"(.*?)\"").matcher(content);
-        java.util.List<String> argumentos = new java.util.ArrayList<>();
+        Matcher matcher = java.util.regex.Pattern.compile("\"(.*?)\"").matcher(content);
+        List<String> argumentos = new java.util.ArrayList<>();
 
         while (matcher.find()) {
             argumentos.add(matcher.group(1));
         }
 
         if (argumentos.size() < 2) {
-            event.getChannel().sendMessage("Uso incorreto do comando!" +
-                    "**Uso:** \n" +
-                    "`v!criarembed \"Título\" \"Descrição\" [\"Imagem\"] [\"Ícone\"] [\"#Hex\"] [\"Footer\"]`").queue();
+            EmbedBuilder eb = new EmbedBuilder();
+            eb.setTitle("<:pink_error:1400136036171907183> **Use:**");
+            eb.setDescription("\nv!criarembed \"Título\" \"Descrição\" [\"Imagem\"] [\"Ícone\"] [\"#Hex\"] [\"Footer\"]");
+            eb.setColor(Color.red);
+            event.getChannel().sendMessageEmbeds(eb.build()).queue();
             return;
         }
 

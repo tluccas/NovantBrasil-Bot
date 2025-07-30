@@ -88,11 +88,11 @@ public class CriarTicketCommand extends ListenerAdapter {
         }
 
         if (argumentosEntreAspas.size() < 2) {
-            event.getChannel().sendMessage("""
-            Uso incorreto do comando!
-            **Use**: \n
-            ` v!criarticket "Título do ticket" "Mensagem do ticket" #canal-log [ url da imagem opcional] `
-            """).queue();
+            EmbedBuilder eb = new EmbedBuilder();
+            eb.setTitle("<:pink_error:1400136036171907183> **Use:**");
+            eb.setDescription(" v!criarticket \"Título do ticket\" \"Mensagem do ticket\" #canal-log [ url da imagem opcional]");
+            eb.setColor(Color.RED);
+            event.getChannel().sendMessageEmbeds(eb.build()).queue();
             return;
         }
 
@@ -102,7 +102,7 @@ public class CriarTicketCommand extends ListenerAdapter {
         // Obtém canal mencionado
         List<TextChannel> canaisMencionados = event.getMessage().getMentions().getChannels(TextChannel.class);
         if (canaisMencionados.isEmpty()) {
-            event.getChannel().sendMessage("❌ Você precisa mencionar um canal de log.").queue();
+            event.getChannel().sendMessage("<:pink_error:1400136036171907183> Você precisa mencionar um canal de log.").queue();
             return;
         }
         TextChannel canalLog = canaisMencionados.get(0);

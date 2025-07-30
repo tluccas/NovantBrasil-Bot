@@ -18,7 +18,7 @@ public class VipController {
             event.reply("Esse comando só pode ser usado por um **MODERADOR** ou **ADMINISTRADOR**").setEphemeral(true).queue();
         }
         if (!event.isFromGuild()) {
-            event.reply("[**ERRO**] Este comando só pode ser usado em servidores.").setEphemeral(true).queue();
+            event.reply("<:pink_error:1400136036171907183> Este comando só pode ser usado em servidores.").setEphemeral(true).queue();
             return;
         }
 
@@ -26,7 +26,7 @@ public class VipController {
         OptionMapping daysOption = event.getOption("dias");
 
         if (userOption == null) {
-            event.reply("[**ERRO**] Você precisa especificar um usuário.").setEphemeral(true).queue();
+            event.reply("<:pink_error:1400136036171907183> Você precisa especificar um usuário.").setEphemeral(true).queue();
             return;
         }
 
@@ -34,7 +34,7 @@ public class VipController {
         int dias = (daysOption != null) ? daysOption.getAsInt() : 0;
 
         if (dias <= 0) {
-            event.reply("[**ERRO**] Dias deve ser maior que 0.").setEphemeral(true).queue();
+            event.reply("<:pink_error:1400136036171907183> Dias deve ser maior que 0.").setEphemeral(true).queue();
             return;
         }
 
@@ -47,7 +47,7 @@ public class VipController {
                 },
                 error -> {
                     // Se não encontrou o membro (erro)
-                    event.reply("[**ERRO**] Não foi possível encontrar o membro no servidor.").setEphemeral(true).queue();
+                    event.reply("<:pink_error:1400136036171907183> Não foi possível encontrar o membro no servidor.").setEphemeral(true).queue();
                 }
         );
     }

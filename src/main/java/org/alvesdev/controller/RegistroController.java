@@ -70,7 +70,7 @@ public class RegistroController extends ListenerAdapter {
                     guild.addRoleToMember(member, role).queue();
                     resposta.append("<a:check_yes2:1399848588527538375> Cargo **").append(role.getName()).append("** atribuído.\n");
                 } else {
-                    resposta.append("⚠️ Sem permissão para atribuir o cargo ").append(role.getName()).append(".\n");
+                    resposta.append("<:pink_error:1400136036171907183> Sem permissão para atribuir o cargo ").append(role.getName()).append(".\n");
                 }
             }
 
@@ -80,7 +80,7 @@ public class RegistroController extends ListenerAdapter {
                     guild.removeRoleFromMember(member, role).queue();
                     resposta.append("<a:check_yes2:1399848588527538375> Cargo **").append(role.getName()).append("** removido.\n");
                 } else {
-                    resposta.append("⚠️ Sem permissão para remover o cargo ").append(role.getName()).append(".\n");
+                    resposta.append("<:pink_error:1400136036171907183> Sem permissão para remover o cargo ").append(role.getName()).append(".\n");
                 }
             }
         }
