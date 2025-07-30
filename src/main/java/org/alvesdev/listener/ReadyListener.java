@@ -2,7 +2,10 @@ package org.alvesdev.listener;
 
 import net.dv8tion.jda.api.events.session.ReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import org.alvesdev.commands.CriarEmbedCommand;
+import org.alvesdev.commands.CriarEmbedPrefixCommand;
 import org.alvesdev.commands.CriarTicketCommand;
+import org.alvesdev.controller.RegistroController;
 import org.alvesdev.repository.TicketManager;
 import org.alvesdev.service.VipService;
 import org.alvesdev.service.registro.SlashCommandRegistry;
@@ -24,24 +27,28 @@ public class ReadyListener extends ListenerAdapter {
         //Registro de comandos
         jda.updateCommands()
                 .addCommands(SlashCommandRegistry.getComandos())
-                .addCommands(CriarTicketCommand.getCommandData()).queue(
-                        success -> System.out.println("✅ Comandos registrados."),
-                        error -> System.err.println("❌ Erro ao registrar comandos: " + error.getMessage())
+                .addCommands(CriarTicketCommand.getCommandData())
+                .addCommands(CriarEmbedCommand.getCommandData())
+                .queue(
+                        success -> System.out.println("[COMANDOS] Comandos registrados."),
+                        error -> System.err.println("[COMANDOS] Erro ao registrar comandos: " + error.getMessage())
                 );
 
         jda.addEventListener(new CriarTicketCommand());   // Listener do comando criarticket
         jda.addEventListener(new TicketSelectListener()); // Listener do select menu
         jda.addEventListener(new TicketButtonListener()); // Listener dos botões
+        jda.addEventListener(new RegistroController());
+        jda.addEventListener(new CriarEmbedCommand()); // Listener do criador de embed
+        jda.addEventListener(new CriarEmbedPrefixCommand()); // Listener do criador de embed com prefixo
 
 
 
         ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
         VipService vipService = new VipService();
 
-        // Verifica a cada 30 SEGUNDOS (em vez de 1 hora)
+        // Verifica a cada 6 horas
         scheduler.scheduleAtFixedRate(() -> {
             vipService.removerExpirados(jda);
-            System.out.println("[TESTE] Verificação rápida em: " + LocalDateTime.now());
-        }, 0, 30, TimeUnit.SECONDS);
+        }, 0, 6, TimeUnit.HOURS);
     }
 }

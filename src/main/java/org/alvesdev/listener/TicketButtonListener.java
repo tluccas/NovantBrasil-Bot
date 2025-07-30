@@ -22,7 +22,7 @@ public class TicketButtonListener extends ListenerAdapter {
     }
 
     private void fecharTicket(ButtonInteractionEvent event) {
-        event.reply("Ticket será fechado e deletado em 5 segundos...").setEphemeral(true).queue();
+        event.reply("Ticket será fechado e deletado em **5 segundos**...").setEphemeral(true).queue();
         event.getChannel().delete().queueAfter(5, TimeUnit.SECONDS);
     }
 

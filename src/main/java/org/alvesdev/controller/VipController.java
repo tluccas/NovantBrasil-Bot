@@ -1,5 +1,7 @@
 package org.alvesdev.controller;
 
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -11,9 +13,12 @@ public class VipController {
     // /setvip
     public void handleSetVip(SlashCommandInteractionEvent event) {
 
-        //Fazer o bloqueio de permissões do servidor da cliente depois
+        Member verify = event.getMember();
+        if(verify != null && !verify.hasPermission(Permission.ADMINISTRATOR)){
+            event.reply("Esse comando só pode ser usado por um **MODERADOR** ou **ADMINISTRADOR**").setEphemeral(true).queue();
+        }
         if (!event.isFromGuild()) {
-            event.reply("❌ Este comando só pode ser usado em servidores.").setEphemeral(true).queue();
+            event.reply("[**ERRO**] Este comando só pode ser usado em servidores.").setEphemeral(true).queue();
             return;
         }
 
@@ -21,7 +26,7 @@ public class VipController {
         OptionMapping daysOption = event.getOption("dias");
 
         if (userOption == null) {
-            event.reply("❌ Você precisa especificar um usuário.").setEphemeral(true).queue();
+            event.reply("[**ERRO**] Você precisa especificar um usuário.").setEphemeral(true).queue();
             return;
         }
 
@@ -29,7 +34,7 @@ public class VipController {
         int dias = (daysOption != null) ? daysOption.getAsInt() : 0;
 
         if (dias <= 0) {
-            event.reply("❌ Dias deve ser maior que 0.").setEphemeral(true).queue();
+            event.reply("[**ERRO**] Dias deve ser maior que 0.").setEphemeral(true).queue();
             return;
         }
 
@@ -38,11 +43,11 @@ public class VipController {
                 member -> {
                     // Se encontrou o membro, prossegue com a atribuição VIP
                     service.atribuirVip(member, dias);
-                    event.reply("✅ Cargo VIP atribuído a " + member.getEffectiveName() + " por " + dias + " dias.").queue();
+                    event.reply("<a:check_yes2:1399848588527538375> Cargo VIP atribuído a " + member.getEffectiveName() + " por " + dias + " dias.").queue();
                 },
                 error -> {
                     // Se não encontrou o membro (erro)
-                    event.reply("❌ Não foi possível encontrar o membro no servidor.").setEphemeral(true).queue();
+                    event.reply("[**ERRO**] Não foi possível encontrar o membro no servidor.").setEphemeral(true).queue();
                 }
         );
     }

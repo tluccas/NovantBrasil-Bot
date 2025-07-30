@@ -26,7 +26,7 @@ public class VipService {
             vip.setUserId(member.getId());
             vip.setGuildId(member.getGuild().getId());
             vip.setRoleId(vipRole.getId());
-            vip.setDataExpiracao(LocalDateTime.now().plusMinutes(dias));
+            vip.setDataExpiracao(LocalDateTime.now().plusDays(dias));
 
 
             vipManager.adicionarVip(vip);
