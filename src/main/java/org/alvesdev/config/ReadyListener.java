@@ -3,6 +3,8 @@ package org.alvesdev.config;
 import net.dv8tion.jda.api.events.session.ReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.alvesdev.commands.*;
+import org.alvesdev.commands.prefix.CallMakerPrefixCommand;
+import org.alvesdev.commands.prefix.CriarEmbedPrefixCommand;
 import org.alvesdev.controller.RegistroController;
 import org.alvesdev.listener.CallMakerListener;
 import org.alvesdev.listener.TicketButtonListener;

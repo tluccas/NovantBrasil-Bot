@@ -1,4 +1,4 @@
-package org.alvesdev.commands;
+package org.alvesdev.commands.prefix;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
