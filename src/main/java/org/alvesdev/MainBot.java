@@ -19,6 +19,7 @@ public class MainBot {
                     GatewayIntent.GUILD_MEMBERS,
                     GatewayIntent.MESSAGE_CONTENT,
                     GatewayIntent.GUILD_VOICE_STATES,
+                    GatewayIntent.GUILD_EMOJIS_AND_STICKERS,
                     GatewayIntent.SCHEDULED_EVENTS).addEventListeners(new CommandListener(), new ReadyListener()).build();
 
             builder.awaitReady();

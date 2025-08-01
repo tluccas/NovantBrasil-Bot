@@ -6,9 +6,9 @@ import org.alvesdev.commands.*;
 import org.alvesdev.commands.prefix.CallMakerPrefixCommand;
 import org.alvesdev.commands.prefix.CriarEmbedPrefixCommand;
 import org.alvesdev.controller.RegistroController;
-import org.alvesdev.listener.CallMakerListener;
-import org.alvesdev.listener.TicketButtonListener;
-import org.alvesdev.listener.TicketSelectListener;
+import org.alvesdev.listener.automacao.CallMakerListener;
+import org.alvesdev.listener.layout.TicketButtonListener;
+import org.alvesdev.listener.layout.TicketSelectListener;
 import org.alvesdev.service.VipService;
 import org.alvesdev.service.registro.SlashCommandRegistry;
 
@@ -33,9 +33,10 @@ public class ReadyListener extends ListenerAdapter {
                     .addCommands(CriarTicketCommand.getCommandData())
                     .addCommands(CriarEmbedCommand.getCommandData())
                     .addCommands(CallMakerCommand.getCommandData())
+                    .addCommands(SetVipRoleCommand.getCommandData())
                     .queue(
-                            success -> System.out.println("[COMANDOS] Comandos registrados."),
-                            error -> System.err.println("[COMANDOS] Erro ao registrar comandos: " + error.getMessage())
+                            success -> System.out.println("\n[COMANDOS] Comandos registrados.\n"),
+                            error -> System.err.println("\n[COMANDOS ERROR] Erro ao registrar comandos: " + error.getMessage())
                     );
         }
         //Listeners Ticket
@@ -50,6 +51,9 @@ public class ReadyListener extends ListenerAdapter {
         jda.addEventListener(new CallMakerPrefixCommand());
         jda.addEventListener(new CallMakerListener());
         jda.addEventListener(new CallMakerCommand());
+
+        //Listener set vip role
+        jda.addEventListener(new SetVipRoleCommand());
 
 
         ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();

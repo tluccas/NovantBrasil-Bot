@@ -1,4 +1,4 @@
-package org.alvesdev.listener;
+package org.alvesdev.listener.automacao;
 
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import org.alvesdev.repository.CallMakerManager;

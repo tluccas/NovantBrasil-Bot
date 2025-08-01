@@ -40,11 +40,11 @@ public class VipManager {
                     if (array != null) {
                         vips.clear();
                         vips.addAll(Arrays.asList(array));
-                        System.out.println("[VIP] Carregados " + vips.size() + " VIPs do arquivo");
+                        System.out.println("\n[VIP] Carregados " + vips.size() + " VIPs do arquivo\n");
                     }
                 }
             } catch (Exception e) {
-                System.err.println("[VIP ERRO] Falha ao carregar: " + e.getMessage());
+                System.err.println("\n[VIP ERRO] Falha ao carregar: " + e.getMessage());
             }
         }
     }
@@ -55,7 +55,7 @@ public class VipManager {
                 String json = gson.toJson(vips);
                 Files.writeString(arquivo, json, StandardCharsets.UTF_8);
             } catch (Exception e) {
-                System.err.println("[VIP ERRO] Falha ao salvar: " + e.getMessage());
+                System.err.println("\n[VIP ERRO] Falha ao salvar: " + e.getMessage());
             }
         }
     }
@@ -87,7 +87,7 @@ public class VipManager {
     public void verificarExpirados(JDA jda) {
         carregar();
         LocalDateTime agora = LocalDateTime.now();
-        System.out.println("\n[VIP] Iniciando verificação em: " + agora);
+        System.out.println("\n[VIP VERIFY] Iniciando verificação em: " + agora + "\n");
 
         List<UsuarioVip> expirados;
         synchronized(vips) {
@@ -95,8 +95,8 @@ public class VipManager {
                     .filter(vip -> {
                         boolean expirado = agora.isAfter(vip.getDataExpiracao().minusSeconds(5));
                         if (expirado) {
-                            System.out.println("[VIP] Expirou: " + vip.getUserId()
-                                    + " | " + vip.getDataExpiracao());
+                            System.out.println("[\nVIP VERIFY] Expirou: " + vip.getUserId()
+                                    + " | " + vip.getDataExpiracao() + "\n");
                         }
                         return expirado;
                     })
