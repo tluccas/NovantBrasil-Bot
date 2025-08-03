@@ -9,7 +9,6 @@ import net.dv8tion.jda.api.entities.Role;
 import org.alvesdev.model.UsuarioVip;
 import org.alvesdev.util.adapter.LocalDateTimeAdapter;
 
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;

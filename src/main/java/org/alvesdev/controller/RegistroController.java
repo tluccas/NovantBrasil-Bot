@@ -25,6 +25,7 @@ public class RegistroController extends ListenerAdapter {
         if(member != null && !member.hasPermission(Permission.ADMINISTRATOR)){
             event.reply("Esse comando só pode ser usado por um **MODERADOR** ou **ADMINISTRADOR**").queue();
         }
+
         String titulo = event.getOption("titulo").getAsString();
         String mensagem = event.getOption("mensagem").getAsString();
         String imagem = event.getOption("imagem") != null ? event.getOption("imagem").getAsString() : null;
