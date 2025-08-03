@@ -5,6 +5,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import org.alvesdev.commands.SetVipRoleCommand;
 import org.alvesdev.service.VipService;
 
 public class VipController {
@@ -35,6 +36,11 @@ public class VipController {
 
         if (dias <= 0) {
             event.reply("<:pink_error:1400136036171907183> Dias deve ser maior que 0.").setEphemeral(true).queue();
+            return;
+        }
+        String vipRoleVerify = SetVipRoleCommand.getCargoVipId();
+        if(vipRoleVerify == null || vipRoleVerify.isEmpty()){
+            event.reply("<:pink_error:1400136036171907183> O cargo vip ainda não foi configurado, use `/setcargovip` para configurar").queue();
             return;
         }
 
