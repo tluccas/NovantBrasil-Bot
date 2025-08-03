@@ -5,7 +5,8 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.alvesdev.commands.*;
 import org.alvesdev.commands.prefix.CallMakerPrefixCommand;
 import org.alvesdev.commands.prefix.CriarEmbedPrefixCommand;
-import org.alvesdev.controller.RegistroController;
+import org.alvesdev.commands.prefix.RegistroPrefixCommand;
+import org.alvesdev.listener.RegistroSelectMenuListener;
 import org.alvesdev.listener.automacao.CallMakerListener;
 import org.alvesdev.listener.layout.TicketButtonListener;
 import org.alvesdev.listener.layout.TicketSelectListener;
@@ -34,6 +35,7 @@ public class ReadyListener extends ListenerAdapter {
                     .addCommands(CriarEmbedCommand.getCommandData())
                     .addCommands(CallMakerCommand.getCommandData())
                     .addCommands(SetVipRoleCommand.getCommandData())
+                            .addCommands(RegistroSlashCommand.getCommandData())
                     .queue(
                             success -> System.out.println("\n[COMANDOS] Comandos registrados.\n"),
                             error -> System.err.println("\n[COMANDOS ERROR] Erro ao registrar comandos: " + error.getMessage())
@@ -43,7 +45,9 @@ public class ReadyListener extends ListenerAdapter {
         jda.addEventListener(new CriarTicketCommand());
         jda.addEventListener(new TicketSelectListener());
         jda.addEventListener(new TicketButtonListener());
-        jda.addEventListener(new RegistroController());
+        //Listener Registro
+        jda.addEventListener(new RegistroSelectMenuListener());
+        jda.addEventListener(new RegistroPrefixCommand());
         //Listeners criar embed
         jda.addEventListener(new CriarEmbedCommand());
         jda.addEventListener(new CriarEmbedPrefixCommand());

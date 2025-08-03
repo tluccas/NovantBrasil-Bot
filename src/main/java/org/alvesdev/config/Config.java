@@ -9,7 +9,8 @@ public class Config {
 
 
     public Config() {
-        this.token = System.getenv("BOT_TOKEN");
+        Dotenv dotenv = Dotenv.load();
+        this.token = dotenv.get("BOT_TOKEN");
         if (this.token == null || this.token.isBlank()) {
             throw new IllegalStateException("Token do bot não configurado. Defina a variável de ambiente BOT_TOKEN");
         }
