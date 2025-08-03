@@ -41,7 +41,6 @@ build/
 dependency-reduced-pom.xml
 callmaker_config.json
 deploy.zip
-.idea
 discloud.config
 vips.json
 
