@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.alvesdev</groupId>
-    <artifactId>ValorantBrasil</artifactId>
+    <artifactId>NovantBot</artifactId>
     <version>1.0</version>
 
     <properties>
