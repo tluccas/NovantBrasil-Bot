@@ -24,12 +24,10 @@ public class ReadyListener extends ListenerAdapter {
         var jda = event.getJDA();
 
         // Obtém o servidor pelo ID
-        var guild = jda.getGuildById("1395994037101527111");
 
         //Registro de comandos
 
-        if (guild != null) {
-            guild.updateCommands()
+            jda.updateCommands()
                     .addCommands(SlashCommandRegistry.getComandos())
                     .addCommands(CriarTicketCommand.getCommandData())
                     .addCommands(CriarEmbedCommand.getCommandData())
@@ -40,7 +38,7 @@ public class ReadyListener extends ListenerAdapter {
                             success -> System.out.println("\n[COMANDOS] Comandos registrados.\n"),
                             error -> System.err.println("\n[COMANDOS ERROR] Erro ao registrar comandos: " + error.getMessage())
                     );
-        }
+
         //Listeners Ticket
         jda.addEventListener(new CriarTicketCommand());
         jda.addEventListener(new TicketSelectListener());

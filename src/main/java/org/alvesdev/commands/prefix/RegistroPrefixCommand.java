@@ -1,6 +1,8 @@
 package org.alvesdev.commands.prefix;
 
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -31,6 +33,11 @@ public class RegistroPrefixCommand extends ListenerAdapter {
                 `v!registro Título;Mensagem;#cor(opcional);id1,id2;imagem(opcional)`
                 """).queue();
             return;
+        }
+
+        Member verify = event.getMember();
+        if (verify != null && !verify.hasPermission(Permission.ADMINISTRATOR)) {
+            event.getChannel().sendMessage("Esse comando só pode ser usado por um **MODERADOR** ou **ADMINISTRADOR**").queue();
         }
 
         String titulo = args[0].trim();

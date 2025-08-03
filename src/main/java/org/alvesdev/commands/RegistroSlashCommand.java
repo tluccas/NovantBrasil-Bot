@@ -1,6 +1,8 @@
 package org.alvesdev.commands;
 
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -29,6 +31,11 @@ public class RegistroSlashCommand extends ListenerAdapter {
     @Override
     public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
         if (!event.getName().equals("registro")) return;
+        Member member = event.getMember();
+        if(member != null && !member.hasPermission(Permission.ADMINISTRATOR)){
+            event.reply("Esse comando só pode ser usado por um **MODERADOR** ou **ADMINISTRADOR**").setEphemeral(true).queue();
+            return;
+        }
 
 
         OptionMapping tituloOpt = event.getOption("titulo");
