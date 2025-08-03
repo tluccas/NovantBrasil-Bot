@@ -41,3 +41,4 @@ build/
 dependency-reduced-pom.xml
 callmaker_config.json
 deploy
+discloud.config
