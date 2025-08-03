@@ -32,6 +32,6 @@ public class RegistroSelectMenuListener extends ListenerAdapter {
             }
         }
 
-        event.reply("✅ Seus cargos foram atualizados!").setEphemeral(true).queue();
+        event.reply("<a:check_yes2:1399848588527538375> Seus cargos foram atualizados!").setEphemeral(true).queue();
     }
 }

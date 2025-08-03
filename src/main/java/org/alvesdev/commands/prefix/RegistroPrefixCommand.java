@@ -11,7 +11,6 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class RegistroPrefixCommand extends ListenerAdapter {
 
     private static final String PREFIX = "v!";
@@ -24,16 +23,21 @@ public class RegistroPrefixCommand extends ListenerAdapter {
         if (!msg.startsWith(PREFIX + "registro")) return;
 
         String[] args = msg.substring((PREFIX + "registro").length()).trim().split(";", -1);
+
         if (args.length < 3) {
-            event.getChannel().sendMessage("<:pink_error:1400136036171907183> Uso: `v!registro Título;Mensagem;#cor(cor opcional);id1,id2;imagem(opcional)`").queue();
+            event.getChannel().sendMessage("""
+                <:pink_error:1400136036171907183> Uso incorreto.
+                Formato correto:
+                `v!registro Título;Mensagem;#cor(opcional);id1,id2;imagem(opcional)`
+                """).queue();
             return;
         }
 
-        String titulo = args[0];
-        String mensagem = args[1];
-        String corHex = args.length > 2 ? args[2].trim() : "#2F3136";
-        String cargosRaw = args.length > 3 ? args[3].trim() : "";
-        String imagem = args.length > 4 ? args[4].trim() : null;
+        String titulo = args[0].trim();
+        String mensagem = args[1].trim();
+        String corHex = !args[2].isBlank() ? args[2].trim() : "#2F3136";
+        String cargosRaw = (args.length > 3) ? args[3].trim() : "";
+        String imagem = (args.length > 4 && !args[4].isBlank()) ? args[4].trim() : null;
 
         Color cor;
         try {
@@ -45,6 +49,7 @@ public class RegistroPrefixCommand extends ListenerAdapter {
 
         List<SelectOption> opcoes = new ArrayList<>();
         for (String id : cargosRaw.split(",")) {
+            if (id.isBlank()) continue;
             Role role = event.getGuild().getRoleById(id.trim());
             if (role != null) opcoes.add(SelectOption.of(role.getName(), role.getId()));
         }
@@ -66,7 +71,7 @@ public class RegistroPrefixCommand extends ListenerAdapter {
                 .setDescription(mensagem)
                 .setColor(cor);
 
-        if (imagem != null && !imagem.isBlank()) embed.setImage(imagem);
+        if (imagem != null) embed.setImage(imagem);
 
         event.getChannel().sendMessageEmbeds(embed.build())
                 .addActionRow(menu)

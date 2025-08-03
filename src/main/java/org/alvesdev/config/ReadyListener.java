@@ -48,6 +48,7 @@ public class ReadyListener extends ListenerAdapter {
         //Listener Registro
         jda.addEventListener(new RegistroSelectMenuListener());
         jda.addEventListener(new RegistroPrefixCommand());
+        jda.addEventListener(new RegistroSlashCommand());
         //Listeners criar embed
         jda.addEventListener(new CriarEmbedCommand());
         jda.addEventListener(new CriarEmbedPrefixCommand());
